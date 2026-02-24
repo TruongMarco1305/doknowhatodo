@@ -4,8 +4,8 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 import { SetContextLink } from '@apollo/client/link/context'
-import { API_URL } from "@/config/env";
 import { getAccessToken } from "./cookie";
+import { API_URL } from "../config/env";
 
 const httpLink = new HttpLink({
   uri: API_URL || "http://localhost:8080",
