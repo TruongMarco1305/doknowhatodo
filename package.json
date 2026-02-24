@@ -11,15 +11,18 @@
   },
   "dependencies": {
     "@apollo/client": "^4.1.6",
+    "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/vite": "^4.2.0",
     "@tanstack/react-form": "^1.28.3",
     "@tanstack/react-router": "^1.162.4",
-    "@tanstack/react-store": "^0.9.1",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.18",
+    "axios": "^1.13.5",
     "graphql": "^16.13.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-redux": "^9.2.0",
+    "rxjs": "^7.8.2",
     "tailwindcss": "^4.2.0"
   },
   "devDependencies": {
