@@ -28,7 +28,7 @@ function RouteComponent() {
         Notification.success({
           title: "Authentication",
           content: "You have successfully logged in!",
-          duration: 10000,
+          duration: 5000,
           theme: "light",
         });
         navigate({ to: "/tasks" });
@@ -37,7 +37,7 @@ function RouteComponent() {
           Notification.error({
             title: "Authentication",
             content: message,
-            duration: 10000,
+            duration: 5000,
             theme: "light",
           });
         });
@@ -85,7 +85,7 @@ function RouteComponent() {
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  className={`w-full px-4 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                  className={`w-full disabled:bg-gray-600 px-4 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                     field.state.meta.errors.length > 0
                       ? "border-red-500"
                       : "border-gray-600"
@@ -129,7 +129,7 @@ function RouteComponent() {
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  className={`w-full px-4 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                  className={`w-full disabled:bg-gray-600 px-4 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                     field.state.meta.errors.length > 0
                       ? "border-red-500"
                       : "border-gray-600"
@@ -148,7 +148,7 @@ function RouteComponent() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-800 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 mt-6"
+            className="w-full disabled:bg-green-800 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 mt-6"
           >
             {isLoading ? "Signing in..." : "Sign in"}
           </button>
@@ -165,7 +165,7 @@ function RouteComponent() {
         <div className="space-y-3">
           <button
             type="button"
-            className="w-full bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 border border-gray-600"
+            className="w-full disabled:bg-gray-800 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 border border-gray-600"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
               <path
