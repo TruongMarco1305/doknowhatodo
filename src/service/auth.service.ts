@@ -10,9 +10,9 @@ const AuthService = {
       password,
     });
   },
-  login: async (email: string, password: string) => {
+  login: async (input: string, password: string) => {
     await axios.post<void>(`${url}/login`, {
-      email,
+      input,
       password,
     });
   },

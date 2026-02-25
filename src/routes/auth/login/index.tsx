@@ -17,13 +17,13 @@ function RouteComponent() {
   const dispatch = useDispatch();
   const form = useForm({
     defaultValues: {
-      email: "",
+      input: "",
       password: "",
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
       try {
-        await AuthService.login(value.email, value.password);
+        await AuthService.login(value.input, value.password);
         dispatch(authenticated());
         Notification.success({
           title: "Authentication",
@@ -63,7 +63,7 @@ function RouteComponent() {
         >
           {/* Email Field */}
           <form.Field
-            name="email"
+            name="input"
             validators={{
               onChange: ({ value }) => {
                 if (!value) return "Username or email address is required";
@@ -76,7 +76,7 @@ function RouteComponent() {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-300 mb-2"
                 >
-                  Email address
+                  Username or Email address
                 </label>
                 <input
                   id="email"
@@ -150,7 +150,7 @@ function RouteComponent() {
             disabled={isLoading}
             className="w-full disabled:bg-green-800 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 mt-6"
           >
-            {isLoading ? "Signing in..." : "Sign in"}
+            {"Sign in"}
           </button>
         </form>
 
