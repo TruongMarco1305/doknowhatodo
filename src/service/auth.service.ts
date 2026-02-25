@@ -11,7 +11,7 @@ const AuthService = {
     });
   },
   login: async (email: string, password: string) => {
-    await axios.post<void>(`${url}/login/`, {
+    await axios.post<void>(`${url}/login`, {
       email,
       password,
     });

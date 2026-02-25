@@ -1,11 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import AuthService from "@/service/auth.service";
 import handleAxiosError from "@/utils/handle-axios-error";
-import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { authenticated } from "@/stores/auth.slice";
+import { Notification } from "@douyinfe/semi-ui-19";
 
 export const Route = createFileRoute("/auth/login/")({
   component: RouteComponent,
@@ -13,6 +13,7 @@ export const Route = createFileRoute("/auth/login/")({
 
 function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const form = useForm({
     defaultValues: {
@@ -24,10 +25,21 @@ function RouteComponent() {
       try {
         await AuthService.login(value.email, value.password);
         dispatch(authenticated());
-        toast.success("Successfully logged in!");
+        Notification.success({
+          title: "Authentication",
+          content: "You have successfully logged in!",
+          duration: 10000,
+          theme: "light",
+        });
+        navigate({ to: "/tasks" });
       } catch (error) {
         handleAxiosError(error, (message: string) => {
-          toast.error(message);
+          Notification.error({
+            title: "Authentication",
+            content: message,
+            duration: 10000,
+            theme: "light",
+          });
         });
       } finally {
         setIsLoading(false);
@@ -36,7 +48,7 @@ function RouteComponent() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Form */}
         <h1 className="text-2xl font-bold text-white mb-6 text-center">
