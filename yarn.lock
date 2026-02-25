@@ -367,7 +367,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@douyinfe/semi-icons@npm:2.91.0":
+"@douyinfe/semi-icons@npm:2.91.0, @douyinfe/semi-icons@npm:^2.91.0":
   version: 2.91.0
   resolution: "@douyinfe/semi-icons@npm:2.91.0"
   dependencies:
@@ -2852,6 +2852,7 @@ __metadata:
   resolution: "doknowhatodo@workspace:."
   dependencies:
     "@apollo/client": "npm:^4.1.6"
+    "@douyinfe/semi-icons": "npm:^2.91.0"
     "@douyinfe/semi-ui-19": "npm:^2.91.0"
     "@eslint/js": "npm:^9.39.1"
     "@reduxjs/toolkit": "npm:^2.11.2"

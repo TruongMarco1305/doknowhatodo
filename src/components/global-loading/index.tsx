@@ -1,4 +1,4 @@
-import Loading from "../loading";
+import Loading from "../icon/loading";
 
 export default function GlobalLoading() {
   return (
