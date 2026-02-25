@@ -9,68 +9,114 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteRouteImport } from './routes/auth/route'
+import { Route as TasksIndexRouteImport } from './routes/tasks/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 
-const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
-  id: '/auth/signup/',
-  path: '/auth/signup/',
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
-  id: '/auth/login/',
-  path: '/auth/login/',
+const TasksIndexRoute = TasksIndexRouteImport.update({
+  id: '/tasks/',
+  path: '/tasks/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
+  id: '/signup/',
+  path: '/signup/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/tasks/': typeof TasksIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/signup/': typeof AuthSignupIndexRoute
 }
 export interface FileRoutesByTo {
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/tasks': typeof TasksIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/signup': typeof AuthSignupIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/tasks/': typeof TasksIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/signup/': typeof AuthSignupIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/auth/login/' | '/auth/signup/'
+  fullPaths: '/auth' | '/tasks/' | '/auth/login/' | '/auth/signup/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth/login' | '/auth/signup'
-  id: '__root__' | '/auth/login/' | '/auth/signup/'
+  to: '/auth' | '/tasks' | '/auth/login' | '/auth/signup'
+  id: '__root__' | '/auth' | '/tasks/' | '/auth/login/' | '/auth/signup/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
-  AuthSignupIndexRoute: typeof AuthSignupIndexRoute
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  TasksIndexRoute: typeof TasksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks/': {
+      id: '/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof TasksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/signup/': {
       id: '/auth/signup/'
-      path: '/auth/signup'
+      path: '/signup'
       fullPath: '/auth/signup/'
       preLoaderRoute: typeof AuthSignupIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/auth/login/': {
       id: '/auth/login/'
-      path: '/auth/login'
+      path: '/login'
       fullPath: '/auth/login/'
       preLoaderRoute: typeof AuthLoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
+interface AuthRouteRouteChildren {
+  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
+  AuthSignupIndexRoute: typeof AuthSignupIndexRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthSignupIndexRoute: AuthSignupIndexRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
+const rootRouteChildren: RootRouteChildren = {
+  AuthRouteRoute: AuthRouteRouteWithChildren,
+  TasksIndexRoute: TasksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
