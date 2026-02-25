@@ -5,8 +5,8 @@ import { useQuery } from "@apollo/client/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useDispatch } from "react-redux";
 import { Notification } from "@douyinfe/semi-ui-19";
-import Loading from "../loading";
 import type { ReactNode } from "react";
+import GlobalLoading from "../global-loading";
 
 export default function AuthenticatedLayout({
   children,
@@ -20,7 +20,7 @@ export default function AuthenticatedLayout({
   dispatch(setUser(data?.getMe || null));
 
   if (loading) {
-    return <Loading />;
+    return <GlobalLoading />;
   }
 
   if (error) {
@@ -30,7 +30,7 @@ export default function AuthenticatedLayout({
       duration: 5000,
       theme: "light",
     });
-    dispatch(logout);
+    dispatch(logout());
     navigate({ to: "/auth/login", search: { next: location.href } });
     return null;
   }
