@@ -56,7 +56,7 @@ export default function AuthenticatedLayout({
   }
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className="h-screen flex flex-col overflow-hidden">
       <Header>
         <div>
           <Nav
@@ -123,7 +123,7 @@ export default function AuthenticatedLayout({
           />
         </div>
       </Header>
-      <Layout>{children}</Layout>
+      <Layout className="flex-1 overflow-hidden">{children}</Layout>
       <SideSheet
         title="Welcome to Doknowhatodo!"
         visible={isUserGuideOpen}

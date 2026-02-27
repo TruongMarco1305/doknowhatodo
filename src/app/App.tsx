@@ -5,9 +5,10 @@ import { Provider } from "react-redux";
 import { persistor, store } from "@/stores/store";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { client } from "@/utils/apollo";
-import { PersistGate } from 'redux-persist/integration/react';
+import { PersistGate } from "redux-persist/integration/react";
 import GlobalLoading from "@/components/global-loading";
-
+import { LocaleProvider } from "@douyinfe/semi-ui-19";
+import en_GB from "@douyinfe/semi-ui-19/lib/es/locale/source/en_GB.js";
 
 const router = createRouter({
   routeTree,
@@ -37,8 +38,10 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <Provider store={store}>
-        <PersistGate loading={<GlobalLoading/>} persistor={persistor}>
-          <AppRouter />
+        <PersistGate loading={<GlobalLoading />} persistor={persistor}>
+          <LocaleProvider locale={en_GB}>
+            <AppRouter />
+          </LocaleProvider>
         </PersistGate>
       </Provider>
     </ApolloProvider>

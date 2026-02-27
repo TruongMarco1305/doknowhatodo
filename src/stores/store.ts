@@ -3,6 +3,7 @@ import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, R
 import storage from "redux-persist/lib/storage";
 import authReducer from "./auth.slice";
 import userReducer from "./user.slice";
+import taskReducer from "./task.slice";
 import { PRODUCTION } from "@/config/env";
 
 const persistConfig = {
@@ -13,6 +14,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
+  task: taskReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
