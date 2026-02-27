@@ -26,7 +26,7 @@ type TaskModalProps = {
 };
 export default function TaskModal({ isOpen, close, submit, loading }: TaskModalProps) {
   const dispatch = useAppDispatch();
-  const { isPreviewMarkdown, description, deadline } = useAppSelector(
+  const { title, description, isPreviewMarkdown, deadline, priority } = useAppSelector(
     (state) => state.task
   );
   return (
@@ -42,6 +42,7 @@ export default function TaskModal({ isOpen, close, submit, loading }: TaskModalP
             onChange={(value) => dispatch(updatePriority(value))}
             className="w-fit"
             disabled={loading}
+            value={priority}
           >
             <Select.Option value="LOW">
               <span className="flex items-center gap-2">
@@ -78,6 +79,7 @@ export default function TaskModal({ isOpen, close, submit, loading }: TaskModalP
         onChange={(e) => dispatch(updateTitle(e))}
         className="mb-3 border border-[#2a2f3e] bg-[#1a1f2e] focus:border-[#2a2f3e] focus:ring-0"
         disabled={loading}
+        value={title}
       />
 
       <div className="flex items-center justify-between mb-2">
@@ -99,6 +101,7 @@ export default function TaskModal({ isOpen, close, submit, loading }: TaskModalP
           onChange={(e) => dispatch(updateDescription(e))}
           className="border border-[#2a2f3e] bg-[#1a1f2e] focus:border-[#2a2f3e] focus:ring-0"
           disabled={loading}
+          value={description}
         />
       )}
       <h1 className="font-bold mt-3">Add a deadline</h1>
@@ -107,7 +110,8 @@ export default function TaskModal({ isOpen, close, submit, loading }: TaskModalP
           type="dateTime"
           needConfirm={true}
           onConfirm={(date) => {
-            dispatch(updateDeadline(date.toLocaleString()));
+            const iso = (date as Date).toISOString();
+            dispatch(updateDeadline(iso.slice(0, 19)));
           }}
           value={deadline ? new Date(deadline) : undefined}
           disabled={loading}

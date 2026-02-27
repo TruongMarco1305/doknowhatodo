@@ -20,16 +20,7 @@ export type KanbanColumn = {
 };
 
 export interface CreateTaskResponse {
-  createTask: {
-    id: string;
-    title: string;
-    description: string;
-    status: TaskStatus;
-    priority: TaskPriority;
-    deadline: string | null;
-    createdAt: string;
-    updatedAt: string;
-  };
+  createTask: Task;
 }
 
 export interface CreateTaskVariables {
@@ -42,13 +33,22 @@ export interface CreateTaskVariables {
 }
 
 export interface UpdateTaskStatusResponse {
-  updateTaskStatus: {
-    id: string;
-    status: TaskStatus;
-  };
+  updateTaskStatus: Task;
 }
 
 export interface UpdateTaskStatusVariables {
   id: string;
   status: TaskStatus;
+}
+
+export interface TaskIdVariable {
+  id: string;
+}
+
+export interface ArchivedTaskResponse {
+  archivedTask: Task;
+}
+
+export interface DeleteTaskResponse {
+  deleteTask: Task;
 }

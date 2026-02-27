@@ -1,13 +1,33 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Task } from "@/types/task";
+import type { Task, TaskPriority } from "@/types/task";
+import {
+  IconAlertTriangle,
+  IconArchive,
+  IconClock,
+  IconDelete,
+  IconLoading,
+  IconMore,
+} from "@douyinfe/semi-icons";
+import { PRIORITY_CONFIG } from "@/data/task";
+import { formatDeadline } from "@/utils/time";
+import { Dropdown } from "@douyinfe/semi-ui-19";
 
 type KanbanCardProps = {
   task: Task;
-  columnColor: string;
+  isDeleteLoading: boolean;
+  isArchiveLoading: boolean;
+  onDelete: () => void;
+  onArchive: () => void;
 };
 
-export default function KanbanCard({ task, columnColor }: KanbanCardProps) {
+export default function KanbanCard({
+  task,
+  isArchiveLoading,
+  isDeleteLoading,
+  onDelete,
+  onArchive,
+}: KanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -23,27 +43,87 @@ export default function KanbanCard({ task, columnColor }: KanbanCardProps) {
     opacity: isDragging ? 0.4 : 1,
   };
 
+  const priority = task.priority as TaskPriority | undefined;
+  const priorityCfg = priority ? PRIORITY_CONFIG[priority] : null;
+  const deadline = task.deadline ? formatDeadline(task.deadline) : null;
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="bg-[#1a1f2e] border border-[#2a2f3e] rounded-lg p-3 cursor-grab active:cursor-grabbing select-none"
+      className={`bg-[#1a1f2e] border rounded-lg p-3 cursor-grab active:cursor-grabbing select-none transition-colors ${
+        deadline
+          ? deadline?.isOverdue
+            ? "border-red-500/50"
+            : "border-amber-500/50"
+          : "border-[#2a2f3e]"
+      }`}
     >
-      {/* Source label */}
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-1.5">
+        {priorityCfg && (
           <span
-            className="w-2 h-2 rounded-full shrink-0"
-            style={{ backgroundColor: columnColor }}
+            className="flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full"
+            style={{
+              color: priorityCfg.color,
+              backgroundColor: priorityCfg.bg,
+            }}
+          >
+            {priority === "HIGH" && <IconAlertTriangle size="extra-small" />}
+            {priorityCfg.label}
+          </span>
+        )}
+        <Dropdown
+          trigger="click"
+          render={
+            <Dropdown.Menu>
+              <Dropdown.Item
+                icon={isArchiveLoading ? <IconLoading /> : <IconArchive />}
+                onClick={onArchive}
+                disabled={isArchiveLoading || isDeleteLoading}
+              >
+                Archived
+              </Dropdown.Item>
+              <Dropdown.Item
+                type="danger"
+                icon={isDeleteLoading ? <IconLoading /> : <IconDelete />}
+                onClick={onDelete}
+                disabled={isArchiveLoading || isDeleteLoading}
+              >
+                Delete
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          }
+        >
+          <IconMore
+            style={{ color: "var(--semi-color-text-2)" }}
+            className="w-4.5 h-4.5 rounded cursor-pointer hover:bg-[#2a2f3e] transition-colors"
           />
-          <span className="text-xs text-gray-400 font-mono">{task.id}</span>
-        </div>
+        </Dropdown>
       </div>
 
       {/* Title */}
-      <p className="text-sm text-gray-100 leading-snug">{task.title}</p>
+      <p className="text-sm text-gray-100 leading-snug mb-2 font-bold hover:underline cursor-pointer">
+        {task.title}
+      </p>
+
+      {/* Deadline footer */}
+      {deadline ? (
+        <div
+          className={`flex items-center gap-1 text-xs font-medium mt-1 ${
+            deadline.isOverdue ? "text-red-400" : "text-amber-400"
+          }`}
+        >
+          <IconClock size="extra-small" />
+          <span>{deadline.text}</span>
+        </div>
+      ) : (
+        <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
+          <IconClock size="extra-small" />
+          <span>No deadline</span>
+        </div>
+      )}
     </div>
   );
 }

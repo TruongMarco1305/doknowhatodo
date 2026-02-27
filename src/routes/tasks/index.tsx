@@ -19,6 +19,9 @@ import type {
   CreateTaskVariables,
   UpdateTaskStatusResponse,
   UpdateTaskStatusVariables,
+  ArchivedTaskResponse,
+  TaskIdVariable,
+  DeleteTaskResponse,
 } from "@/types/task";
 import KanbanColumnComponent from "@/components/kanban/kanban-column";
 import KanbanCard from "@/components/kanban/kanban-card";
@@ -27,9 +30,14 @@ import { Button, Input, Notification } from "@douyinfe/semi-ui-19";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { GET_INITIAL_DATA } from "@/graphql/queries/task";
 import GlobalLoading from "@/components/global-loading";
-import { COLUMN_DEFS } from "@/data/column";
+import { COLUMN_DEFS } from "@/data/task";
 import TaskModal from "@/components/task-modal";
-import { CREATE_TASK, UPDATE_TASK_STATUS } from "@/graphql/mutations/task";
+import {
+  ARCHIVED_TASK,
+  CREATE_TASK,
+  DELETE_TASK,
+  UPDATE_TASK_STATUS,
+} from "@/graphql/mutations/task";
 import { resetTask } from "@/stores/task.slice";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { useAppSelector } from "@/hooks/use-app-selector";
@@ -58,6 +66,20 @@ function RouteComponent() {
     UpdateTaskStatusResponse,
     UpdateTaskStatusVariables
   >(UPDATE_TASK_STATUS);
+  const [archivedTask, { loading: archiveLoading }] = useMutation<
+    ArchivedTaskResponse,
+    TaskIdVariable
+  >(ARCHIVED_TASK, {
+    refetchQueries: [{ query: GET_INITIAL_DATA }],
+    awaitRefetchQueries: true,
+  });
+  const [deleteTask, { loading: deleteLoading }] = useMutation<
+    DeleteTaskResponse,
+    TaskIdVariable
+  >(DELETE_TASK, {
+    refetchQueries: [{ query: GET_INITIAL_DATA }],
+    awaitRefetchQueries: true,
+  });
   const dispatch = useAppDispatch();
   const { title, description, priority, deadline } = useAppSelector(
     (state) => state.task,
@@ -75,7 +97,6 @@ function RouteComponent() {
   const [localOverrides, setLocalOverrides] = useState<
     Record<string, TaskStatus>
   >({});
-  // Ref so onDragEnd always reads the latest pending status, avoiding stale closure
   const pendingStatusRef = useRef<{ id: string; status: TaskStatus } | null>(
     null,
   );
@@ -150,7 +171,7 @@ function RouteComponent() {
       Notification.success({
         title: "Update Successful",
         content: "Task status has been updated successfully.",
-        duration: 5000,
+        duration: 5,
         theme: "light",
       });
     } catch {
@@ -162,7 +183,7 @@ function RouteComponent() {
       Notification.error({
         title: "Update Failed",
         content: "Could not update task status. Please try again.",
-        duration: 5000,
+        duration: 5,
         theme: "light",
       });
     }
@@ -171,6 +192,44 @@ function RouteComponent() {
   const activeColumnDef = activeTask
     ? COLUMN_DEFS.find((c) => c.id === activeTask.status)
     : null;
+
+  const handleDeleteTask = async (id: string) => {
+    try {
+      await deleteTask({ variables: { id } });
+      Notification.success({
+        title: "Task Deleted",
+        content: "The task has been deleted successfully.",
+        duration: 5,
+        theme: "light",
+      });
+    } catch {
+      Notification.error({
+        title: "Task Deletion Failed",
+        content: "Failed to delete task. Please try again.",
+        duration: 5,
+        theme: "light",
+      });
+    }
+  };
+
+  const handleArchiveTask = async (id: string) => {
+    try {
+      await archivedTask({ variables: { id } });
+      Notification.success({
+        title: "Task Archived",
+        content: "The task has been archived successfully.",
+        duration: 5,
+        theme: "light",
+      });
+    } catch {
+      Notification.error({
+        title: "Task Archiving Failed",
+        content: "Failed to archive task. Please try again.",
+        duration: 5,
+        theme: "light",
+      });
+    }
+  };
 
   return (
     <AuthenticatedLayout>
@@ -199,7 +258,14 @@ function RouteComponent() {
             >
               <div className="flex gap-4 flex-1 min-h-0">
                 {columns.map((col) => (
-                  <KanbanColumnComponent key={col.id} column={col} />
+                  <KanbanColumnComponent
+                    key={col.id}
+                    column={col}
+                    handleArchiveTask={(id: string) => handleArchiveTask(id)}
+                    handleDeleteTask={(id: string) => handleDeleteTask(id)}
+                    isDeleteLoading={deleteLoading}
+                    isArchiveLoading={archiveLoading}
+                  />
                 ))}
               </div>
 
@@ -208,7 +274,10 @@ function RouteComponent() {
                   <div className="rotate-2 shadow-2xl">
                     <KanbanCard
                       task={activeTask}
-                      columnColor={activeColumnDef.color}
+                      onDelete={() => handleDeleteTask(activeTask.id)}
+                      isDeleteLoading={deleteLoading}
+                      isArchiveLoading={archiveLoading}
+                      onArchive={() => handleArchiveTask(activeTask.id)}
                     />
                   </div>
                 ) : null}
@@ -236,14 +305,14 @@ function RouteComponent() {
                 Notification.success({
                   title: "Task Created",
                   content: "The task has been created successfully.",
-                  duration: 5000,
+                  duration: 5,
                   theme: "light",
                 });
               } catch {
                 Notification.error({
                   title: "Task Creation Failed",
                   content: "Failed to add task. Please try again.",
-                  duration: 5000,
+                  duration: 5,
                   theme: "light",
                 });
               }

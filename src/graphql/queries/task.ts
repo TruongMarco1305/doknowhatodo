@@ -22,11 +22,8 @@ export const GET_INITIAL_DATA = gql`
   fragment TaskFragment on TaskType {
     id
     title
-    description
     status
     priority
     deadline
-    createdAt
-    updatedAt
   }
 `;

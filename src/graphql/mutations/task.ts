@@ -23,3 +23,20 @@ export const CREATE_TASK = gql`
         }
     }
 `;
+
+export const DELETE_TASK = gql`
+    mutation DeleteTask($id: String!) {
+        deleteTask(taskId: $id) {
+            id
+        }
+    }
+`;
+
+export const ARCHIVED_TASK = gql`
+    mutation ChangeArchiveStatus($id: String!) {
+        changeArchiveStatus(taskId: $id) {
+            id
+            isArchived
+        }
+    }
+`;

@@ -35,7 +35,7 @@ function RouteComponent() {
         Notification.success({
           title: "Authentication",
           content: "You have successfully signed up!",
-          duration: 5000,
+          duration: 5,
           theme: "light",
         });
         navigate({ to: "/tasks" });
@@ -44,7 +44,7 @@ function RouteComponent() {
           Notification.error({
             title: "Authentication",
             content: message,
-            duration: 5000,
+            duration: 5,
             theme: "light",
           });
         });

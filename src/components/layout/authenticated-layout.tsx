@@ -47,7 +47,7 @@ export default function AuthenticatedLayout({
     Notification.error({
       title: "Authentication",
       content: "Please login to continue",
-      duration: 5000,
+      duration: 5,
       theme: "light",
     });
     dispatch(logout());
@@ -104,7 +104,7 @@ export default function AuthenticatedLayout({
                     </Dropdown.Menu>
                   }
                 >
-                  <div style={{ cursor: "pointer" }}>
+                  <div className='cursor-pointer'>
                     {data?.getMe.imageUrl ? (
                       <Avatar
                         alt="User Avatar"
