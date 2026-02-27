@@ -45,10 +45,10 @@ type GetInitialDataResult = {
 
 function RouteComponent() {
   const { data, loading } = useQuery<GetInitialDataResult>(GET_INITIAL_DATA);
-  const [
-    addTask,
-    { loading: addTaskLoading },
-  ] = useMutation<CreateTaskResponse, CreateTaskVariables>(CREATE_TASK, {
+  const [addTask, { loading: addTaskLoading }] = useMutation<
+    CreateTaskResponse,
+    CreateTaskVariables
+  >(CREATE_TASK, {
     refetchQueries: [{ query: GET_INITIAL_DATA }],
     awaitRefetchQueries: true,
   });
@@ -131,87 +131,85 @@ function RouteComponent() {
     ? COLUMN_DEFS.find((c) => c.id === activeTask.status)
     : null;
 
-  if (loading) {
-    return (
-      <AuthenticatedLayout>
-        <GlobalLoading />
-      </AuthenticatedLayout>
-    );
-  }
-
   return (
     <AuthenticatedLayout>
-      <div className="flex flex-col h-full bg-[#0d1117] px-6 py-3">
-        <div className="flex items-center gap-4 mb-4">
-          <Input
-            prefix={<IconSearch />}
-            placeholder="Filter by title..."
-            value={search}
-            onChange={(e) => setSearch(e)}
-          />
-          <Button onClick={() => setIsModalOpen(true)} icon={<IconPlus />}>
-            Add task
-          </Button>
-        </div>
+      {loading ? (
+        <GlobalLoading />
+      ) : (
+        <>
+          <div className="flex flex-col h-full bg-[#0d1117] px-6 py-3">
+            <div className="flex items-center gap-4 mb-4">
+              <Input
+                prefix={<IconSearch />}
+                placeholder="Filter by title..."
+                value={search}
+                onChange={(e) => setSearch(e)}
+              />
+              <Button onClick={() => setIsModalOpen(true)} icon={<IconPlus />}>
+                Add task
+              </Button>
+            </div>
 
-        <DndContext
-          sensors={sensors}
-          onDragStart={onDragStart}
-          onDragOver={onDragOver}
-          onDragEnd={onDragEnd}
-        >
-          <div className="flex gap-4 flex-1 min-h-0">
-            {columns.map((col) => (
-              <KanbanColumnComponent key={col.id} column={col} />
-            ))}
-          </div>
-
-          <DragOverlay>
-            {activeTask && activeColumnDef ? (
-              <div className="rotate-2 shadow-2xl">
-                <KanbanCard
-                  task={activeTask}
-                  columnColor={activeColumnDef.color}
-                />
+            <DndContext
+              sensors={sensors}
+              onDragStart={onDragStart}
+              onDragOver={onDragOver}
+              onDragEnd={onDragEnd}
+            >
+              <div className="flex gap-4 flex-1 min-h-0">
+                {columns.map((col) => (
+                  <KanbanColumnComponent key={col.id} column={col} />
+                ))}
               </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
-      </div>
-      <TaskModal
-        loading={addTaskLoading}
-        close={() => setIsModalOpen(false)}
-        isOpen={isModalOpen}
-        submit={async () => {
-          try {
-            await addTask({
-              variables: {
-                data: {
-                  title,
-                  description,
-                  priority,
-                  deadline,
-                },
-              },
-            });
-            dispatch(resetTask());
-            setIsModalOpen(false);
-            Notification.success({
-              title: "Task Created",
-              content: "The task has been created successfully.",
-              duration: 5000,
-              theme: "light",
-            });
-          } catch {
-            Notification.error({
-              title: "Task Creation Failed",
-              content: "Failed to add task. Please try again.",
-              duration: 5000,
-              theme: "light",
-            });
-          }
-        }}
-      />
+
+              <DragOverlay>
+                {activeTask && activeColumnDef ? (
+                  <div className="rotate-2 shadow-2xl">
+                    <KanbanCard
+                      task={activeTask}
+                      columnColor={activeColumnDef.color}
+                    />
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          </div>
+          <TaskModal
+            loading={addTaskLoading}
+            close={() => setIsModalOpen(false)}
+            isOpen={isModalOpen}
+            submit={async () => {
+              try {
+                await addTask({
+                  variables: {
+                    data: {
+                      title,
+                      description,
+                      priority,
+                      deadline,
+                    },
+                  },
+                });
+                dispatch(resetTask());
+                setIsModalOpen(false);
+                Notification.success({
+                  title: "Task Created",
+                  content: "The task has been created successfully.",
+                  duration: 5000,
+                  theme: "light",
+                });
+              } catch {
+                Notification.error({
+                  title: "Task Creation Failed",
+                  content: "Failed to add task. Please try again.",
+                  duration: 5000,
+                  theme: "light",
+                });
+              }
+            }}
+          />
+        </>
+      )}
     </AuthenticatedLayout>
   );
 }
