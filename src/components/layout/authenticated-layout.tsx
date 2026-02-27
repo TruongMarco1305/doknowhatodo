@@ -10,17 +10,29 @@ import {
   Nav,
   Avatar,
   Button,
+  Dropdown,
+  SideSheet,
+  MarkdownRender,
 } from "@douyinfe/semi-ui-19";
 import type { ReactNode } from "react";
 import GlobalLoading from "../global-loading";
 import Logo from "../icon/logo";
-import { IconArchive, IconHelpCircle } from "@douyinfe/semi-icons";
+import {
+  IconArchive,
+  IconHelpCircle,
+  IconUser,
+  IconQuit,
+} from "@douyinfe/semi-icons";
+import AuthService from "@/service/auth.service";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { closeUserGuide, openUserGuide } from "@/stores/user.slice";
 
 export default function AuthenticatedLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  const isUserGuideOpen = useAppSelector((state) => state.user.isOpenUserGuide);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { Header } = Layout;
@@ -68,20 +80,61 @@ export default function AuthenticatedLayout({
                   icon={<IconHelpCircle size="large" />}
                   className="mr-3"
                   style={{ color: "var(--semi-color-text-2)" }}
+                  onClick={() => dispatch(openUserGuide())}
                 />
-                {data?.getMe.imageUrl ? (
-                  <Avatar alt="User Avatar" src={data.getMe.imageUrl} />
-                ) : (
-                  <Avatar alt="User Avatar">
-                    {data?.getMe.name.split(" ")[0]}
-                  </Avatar>
-                )}
+                <Dropdown
+                  trigger="click"
+                  render={
+                    <Dropdown.Menu>
+                      <Dropdown.Item icon={<IconUser />}>Profile</Dropdown.Item>
+                      <Dropdown.Item
+                        type="danger"
+                        icon={<IconQuit />}
+                        onClick={async () => {
+                          await AuthService.logout();
+                          dispatch(logout());
+                          navigate({
+                            to: "/auth/login",
+                            search: { next: location.href },
+                          });
+                        }}
+                      >
+                        Logout
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  }
+                >
+                  <div style={{ cursor: "pointer" }}>
+                    {data?.getMe.imageUrl ? (
+                      <Avatar
+                        alt="User Avatar"
+                        src={data.getMe.imageUrl}
+                        className="mr-5"
+                      />
+                    ) : (
+                      <Avatar alt="User Avatar" className="mr-5">
+                        {data?.getMe.name.split(" ")[0]}
+                      </Avatar>
+                    )}
+                  </div>
+                </Dropdown>
               </>
             }
           />
         </div>
       </Header>
-      {children}
+      <Layout>{children}</Layout>
+      <SideSheet
+        title="Welcome to Doknowhatodo!"
+        visible={isUserGuideOpen}
+        onCancel={() => dispatch(closeUserGuide())}
+      >
+        <MarkdownRender
+          raw={
+            "This is a task management application designed to help you organize and track your daily tasks effectively.\n\n## Features\n\n- **Create Tasks**: Add new tasks with descriptions and due dates\n- **Organize**: Categorize and prioritize your tasks\n- **Archive**: Keep completed tasks in an archive for reference\n- **User Profile**: Manage your account settings\n\n## Getting Started\n\n1. Use the navigation menu to access different sections\n2. Click the '+' button to create a new task\n3. Archive completed tasks from the Archived Tasks menu\n4. Click the profile icon to manage your account\n\nHappy organizing!"
+          }
+        />
+      </SideSheet>
     </Layout>
   );
 }
