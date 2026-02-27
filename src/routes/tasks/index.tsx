@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/components/layout/authenticated-layout";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -17,6 +17,8 @@ import type {
   TaskStatus,
   CreateTaskResponse,
   CreateTaskVariables,
+  UpdateTaskStatusResponse,
+  UpdateTaskStatusVariables,
 } from "@/types/task";
 import KanbanColumnComponent from "@/components/kanban/kanban-column";
 import KanbanCard from "@/components/kanban/kanban-card";
@@ -27,7 +29,7 @@ import { GET_INITIAL_DATA } from "@/graphql/queries/task";
 import GlobalLoading from "@/components/global-loading";
 import { COLUMN_DEFS } from "@/data/column";
 import TaskModal from "@/components/task-modal";
-import { CREATE_TASK } from "@/graphql/mutations/task";
+import { CREATE_TASK, UPDATE_TASK_STATUS } from "@/graphql/mutations/task";
 import { resetTask } from "@/stores/task.slice";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { useAppSelector } from "@/hooks/use-app-selector";
@@ -52,6 +54,10 @@ function RouteComponent() {
     refetchQueries: [{ query: GET_INITIAL_DATA }],
     awaitRefetchQueries: true,
   });
+  const [updateTaskStatus] = useMutation<
+    UpdateTaskStatusResponse,
+    UpdateTaskStatusVariables
+  >(UPDATE_TASK_STATUS);
   const dispatch = useAppDispatch();
   const { title, description, priority, deadline } = useAppSelector(
     (state) => state.task,
@@ -69,6 +75,10 @@ function RouteComponent() {
   const [localOverrides, setLocalOverrides] = useState<
     Record<string, TaskStatus>
   >({});
+  // Ref so onDragEnd always reads the latest pending status, avoiding stale closure
+  const pendingStatusRef = useRef<{ id: string; status: TaskStatus } | null>(
+    null,
+  );
 
   const tasks: Task[] = serverTasks.map((t) =>
     localOverrides[t.id] ? { ...t, status: localOverrides[t.id] } : t,
@@ -112,19 +122,50 @@ function RouteComponent() {
     const overColId = findColumn(overId);
     if (!activeColId || !overColId || activeColId === overColId) return;
 
+    pendingStatusRef.current = { id: activeId, status: overColId };
     setLocalOverrides((prev) => ({ ...prev, [activeId]: overColId }));
   };
 
-  const onDragEnd = ({ active, over }: DragEndEvent) => {
+  const onDragEnd = async ({ active, over }: DragEndEvent) => {
     setActiveTask(null);
-    if (!over) return;
+    const pending = pendingStatusRef.current;
+    pendingStatusRef.current = null;
 
-    const activeId = String(active.id);
-    const overId = String(over.id);
-    if (activeId === overId) return;
+    if (!over || !pending) {
+      const activeId = String(active.id);
+      setLocalOverrides((prev) => {
+        const next = { ...prev };
+        delete next[activeId];
+        return next;
+      });
+      return;
+    }
 
-    const overIndex = tasks.findIndex((t) => t.id === overId);
-    if (overIndex === -1) return;
+    const { id: activeId, status: newStatus } = pending;
+
+    try {
+      await updateTaskStatus({
+        variables: { id: activeId, status: newStatus },
+      });
+      Notification.success({
+        title: "Update Successful",
+        content: "Task status has been updated successfully.",
+        duration: 5000,
+        theme: "light",
+      });
+    } catch {
+      setLocalOverrides((prev) => {
+        const next = { ...prev };
+        delete next[activeId];
+        return next;
+      });
+      Notification.error({
+        title: "Update Failed",
+        content: "Could not update task status. Please try again.",
+        duration: 5000,
+        theme: "light",
+      });
+    }
   };
 
   const activeColumnDef = activeTask

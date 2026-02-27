@@ -40,3 +40,15 @@ export interface CreateTaskVariables {
     deadline?: string;
   };
 }
+
+export interface UpdateTaskStatusResponse {
+  updateTaskStatus: {
+    id: string;
+    status: TaskStatus;
+  };
+}
+
+export interface UpdateTaskStatusVariables {
+  id: string;
+  status: TaskStatus;
+}
