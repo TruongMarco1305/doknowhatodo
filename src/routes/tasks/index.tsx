@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/components/layout/authenticated-layout";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -47,8 +47,11 @@ function RouteComponent() {
   const { data, loading } = useQuery<GetInitialDataResult>(GET_INITIAL_DATA);
   const [
     addTask,
-    { loading: addTaskLoading, data: addTaskData },
-  ] = useMutation<CreateTaskResponse, CreateTaskVariables>(CREATE_TASK);
+    { loading: addTaskLoading },
+  ] = useMutation<CreateTaskResponse, CreateTaskVariables>(CREATE_TASK, {
+    refetchQueries: [{ query: GET_INITIAL_DATA }],
+    awaitRefetchQueries: true,
+  });
   const dispatch = useAppDispatch();
   const { title, description, priority, deadline } = useAppSelector(
     (state) => state.task,
@@ -66,18 +69,6 @@ function RouteComponent() {
   const [localOverrides, setLocalOverrides] = useState<
     Record<string, TaskStatus>
   >({});
-
-  useEffect(() => {
-    const addNewTask = () => {
-      if (addTaskData?.createTask) {
-        setLocalOverrides((prev) => ({
-          ...prev,
-          [addTaskData.createTask.id]: "TODO",
-        }));
-      }
-    };
-    addNewTask();
-  }, [addTaskData]);
 
   const tasks: Task[] = serverTasks.map((t) =>
     localOverrides[t.id] ? { ...t, status: localOverrides[t.id] } : t,
