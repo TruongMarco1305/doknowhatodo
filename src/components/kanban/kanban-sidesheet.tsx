@@ -1,7 +1,7 @@
 import { GET_TASK_DETAIL } from "@/graphql/queries/task";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { useAppSelector } from "@/hooks/use-app-selector";
-import { closeDetailSideSheet } from "@/stores/task.slice";
+import { closeDetailSideSheet, openArchivedTaskModal, openDeleteTaskModal } from "@/stores/task.slice";
 import type {
   GetTaskDetailResponse,
   TaskIdVariable,
@@ -48,12 +48,7 @@ function InfoRow({
   );
 }
 
-type KanbanSideSheetProps = {
-  handleArchiveTask: (id: string) => void;
-  handleDeleteTask: (id: string) => void;
-};
-
-export default function KanbanSideSheet({ handleArchiveTask, handleDeleteTask }: KanbanSideSheetProps) {
+export default function KanbanSideSheet() {
   const { isOpenDetailSideSheet: isOpen, currentTaskId: taskId } =
     useAppSelector((state) => state.task);
   const dispatch = useAppDispatch();
@@ -73,7 +68,9 @@ export default function KanbanSideSheet({ handleArchiveTask, handleDeleteTask }:
     ? COLUMN_DEFS.find((c) => c.id === task.status)
     : null;
   const deadline = task?.deadline ? formatTime(task.deadline) : null;
-  const isOverdue = task?.deadline ? new Date(task.deadline).getTime() < new Date().getTime() : false;
+  const isOverdue = task?.deadline
+    ? new Date(task.deadline).getTime() < new Date().getTime()
+    : false;
 
   return (
     <SideSheet
@@ -84,7 +81,11 @@ export default function KanbanSideSheet({ handleArchiveTask, handleDeleteTask }:
           <span className="flex items-center justify-between -mt-1">
             <p>{task?.title || "Task Detail"}</p>
             <div className="flex items-center gap-2 mr-4">
-              <Tooltip content="Edit Task" position="bottom" className="cursor-pointer">
+              <Tooltip
+                content="Edit Task"
+                position="bottom"
+                className="cursor-pointer"
+              >
                 <span style={{ display: "inline-block" }}>
                   <Button
                     icon={<IconEdit />}
@@ -93,23 +94,37 @@ export default function KanbanSideSheet({ handleArchiveTask, handleDeleteTask }:
                   ></Button>
                 </span>
               </Tooltip>
-              <Tooltip content="Archive Task" position="bottom" className="cursor-pointer">
+              <Tooltip
+                content="Archive Task"
+                position="bottom"
+                className="cursor-pointer"
+              >
                 <span style={{ display: "inline-block" }}>
                   <Button
                     icon={<IconArchive />}
                     type="tertiary"
                     theme="borderless"
-                    onClick={() => handleArchiveTask(task?.id || "")}
+                    onClick={() => {
+                      dispatch(openArchivedTaskModal());
+                      dispatch(closeDetailSideSheet());
+                    }}
                   ></Button>
                 </span>
               </Tooltip>
-              <Tooltip content="Delete Task" position="bottom" className="cursor-pointer">
+              <Tooltip
+                content="Delete Task"
+                position="bottom"
+                className="cursor-pointer"
+              >
                 <span style={{ display: "inline-block" }}>
                   <Button
                     icon={<IconDelete />}
                     type="danger"
                     theme="borderless"
-                    onClick={() => handleDeleteTask(task?.id || "")}
+                    onClick={() => {
+                      dispatch(openDeleteTaskModal());
+                      dispatch(closeDetailSideSheet());
+                    }}
                   ></Button>
                 </span>
               </Tooltip>

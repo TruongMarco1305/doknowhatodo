@@ -8,6 +8,8 @@ export type TaskSlice = {
   deadline?: string;
   isPreviewMarkdown: boolean;
   isOpenDetailSideSheet: boolean;
+  isOpenArchivedTaskModal: boolean;
+  isOpenDeleteTaskModal: boolean;
   currentTaskId?: string;
 };
 
@@ -18,6 +20,8 @@ const initialState: TaskSlice = {
   deadline: undefined,
   isPreviewMarkdown: false,
   isOpenDetailSideSheet: false,
+  isOpenArchivedTaskModal: false,
+  isOpenDeleteTaskModal: false,
   currentTaskId: undefined,
 };
 
@@ -49,6 +53,18 @@ export const taskSlice = createSlice({
     updateIsPreviewMarkdown: (state, action) => {
       state.isPreviewMarkdown = action.payload;
     },
+    openArchivedTaskModal: (state) => {
+      state.isOpenArchivedTaskModal = true;
+    },
+    closeArchivedTaskModal: (state) => {
+      state.isOpenArchivedTaskModal = false;
+    },
+    openDeleteTaskModal: (state) => {
+      state.isOpenDeleteTaskModal = true;
+    },
+    closeDeleteTaskModal: (state) => {
+      state.isOpenDeleteTaskModal = false;
+    },
     resetTask: (state) => {
       state.title = "";
       state.description = "";
@@ -68,5 +84,9 @@ export const {
   openDetailSideSheet,
   closeDetailSideSheet,
   handleSelectTask,
+  openArchivedTaskModal,
+  closeArchivedTaskModal,
+  openDeleteTaskModal,
+  closeDeleteTaskModal,
 } = taskSlice.actions;
 export default taskSlice.reducer;

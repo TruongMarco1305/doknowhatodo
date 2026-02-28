@@ -15,10 +15,6 @@ import {
 } from "@douyinfe/semi-icons";
 
 type KanbanColumnProps = {
-  handleArchiveTask: (id: string) => void;
-  handleDeleteTask: (id: string) => void;
-  isDeleteLoading: boolean;
-  isArchiveLoading: boolean;
   column: KanbanColumnType;
 };
 
@@ -39,10 +35,6 @@ function FilterSubDropdown() {
 }
 export default function KanbanColumn({
   column,
-  handleArchiveTask,
-  handleDeleteTask,
-  isDeleteLoading,
-  isArchiveLoading,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
 
@@ -123,10 +115,6 @@ export default function KanbanColumn({
             <KanbanCard
               key={task.id}
               task={task}
-              onDelete={() => handleDeleteTask(task.id)}
-              isDeleteLoading={isDeleteLoading}
-              isArchiveLoading={isArchiveLoading}
-              onArchive={() => handleArchiveTask(task.id)}
             />
           ))}
         </div>

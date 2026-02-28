@@ -19,13 +19,14 @@ import {
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { formatTime } from "@/utils/time";
 
-type TaskModalProps = {
+type CreateTaskModalProps = {
   isOpen: boolean;
   loading: boolean;
   close: () => void;
   submit: () => void;
 };
-export default function TaskModal({ isOpen, close, submit, loading }: TaskModalProps) {
+
+export default function CreateTaskModal({ isOpen, close, submit, loading }: CreateTaskModalProps) {
   const dispatch = useAppDispatch();
   const { title, description, isPreviewMarkdown, deadline, priority } = useAppSelector(
     (state) => state.task

@@ -6,30 +6,25 @@ import {
   IconArchive,
   IconClock,
   IconDelete,
-  IconLoading,
   IconMore,
 } from "@douyinfe/semi-icons";
 import { PRIORITY_CONFIG } from "@/data/task";
 import { formatTime } from "@/utils/time";
 import { Button, Dropdown } from "@douyinfe/semi-ui-19";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
-import { handleSelectTask, openDetailSideSheet } from "@/stores/task.slice";
+import {
+  handleSelectTask,
+  openArchivedTaskModal,
+  openDeleteTaskModal,
+  openDetailSideSheet,
+} from "@/stores/task.slice";
+import { useState } from "react";
 
 type KanbanCardProps = {
   task: Task;
-  isDeleteLoading: boolean;
-  isArchiveLoading: boolean;
-  onDelete: () => void;
-  onArchive: () => void;
 };
 
-export default function KanbanCard({
-  task,
-  isArchiveLoading,
-  isDeleteLoading,
-  onDelete,
-  onArchive,
-}: KanbanCardProps) {
+export default function KanbanCard({ task }: KanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -40,6 +35,7 @@ export default function KanbanCard({
   } = useSortable({ id: task.id });
 
   const dispatch = useAppDispatch();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -84,20 +80,27 @@ export default function KanbanCard({
         <Dropdown
           trigger="click"
           position="bottomRight"
+          visible={isDropdownOpen}
           render={
             <Dropdown.Menu>
               <Dropdown.Item
-                icon={isArchiveLoading ? <IconLoading /> : <IconArchive />}
-                onClick={onArchive}
-                disabled={isArchiveLoading || isDeleteLoading}
+                icon={<IconArchive />}
+                onClick={() => {
+                  dispatch(handleSelectTask(task.id));
+                  dispatch(openArchivedTaskModal());
+                  setIsDropdownOpen(false);
+                }}
               >
                 Archived
               </Dropdown.Item>
               <Dropdown.Item
                 type="danger"
-                icon={isDeleteLoading ? <IconLoading /> : <IconDelete />}
-                onClick={onDelete}
-                disabled={isArchiveLoading || isDeleteLoading}
+                icon={<IconDelete />}
+                onClick={() => {
+                  dispatch(handleSelectTask(task.id));
+                  dispatch(openDeleteTaskModal());
+                  setIsDropdownOpen(false);
+                }}
               >
                 Delete
               </Dropdown.Item>
@@ -110,6 +113,9 @@ export default function KanbanCard({
               type="tertiary"
               theme="borderless"
               style={{ padding: 8, width: 20, height: 20 }}
+              onClick={() => {
+                setIsDropdownOpen(true);
+              }}
             />
           </span>
         </Dropdown>
