@@ -5,7 +5,7 @@ import {
 } from "@dnd-kit/sortable";
 import type { KanbanColumn as KanbanColumnType } from "@/types/task";
 import KanbanCard from "./kanban-card";
-import { Dropdown } from "@douyinfe/semi-ui-19";
+import { Button, Dropdown } from "@douyinfe/semi-ui-19";
 import {
   IconArchive,
   IconDelete,
@@ -97,10 +97,14 @@ export default function KanbanColumn({
             </Dropdown.Menu>
           }
         >
-          <IconMore
-            style={{ color: "var(--semi-color-text-2)" }}
-            className="w-4.5 h-4.5 rounded cursor-pointer hover:bg-[#2a2f3e] transition-colors"
-          />
+          <span style={{ display: "inline-block" }}>
+            <Button
+              icon={<IconMore />}
+              type="tertiary"
+              theme="borderless"
+              style={{ padding: 8, width: 20, height: 20 }}
+            />
+          </span>
         </Dropdown>
       </div>
 

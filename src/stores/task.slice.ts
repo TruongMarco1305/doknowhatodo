@@ -7,6 +7,8 @@ export type TaskSlice = {
   priority: TaskPriority;
   deadline?: string;
   isPreviewMarkdown: boolean;
+  isOpenDetailSideSheet: boolean;
+  currentTaskId?: string;
 };
 
 const initialState: TaskSlice = {
@@ -15,12 +17,23 @@ const initialState: TaskSlice = {
   priority: "LOW",
   deadline: undefined,
   isPreviewMarkdown: false,
+  isOpenDetailSideSheet: false,
+  currentTaskId: undefined,
 };
 
 export const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
+    handleSelectTask: (state, action) => {
+      state.currentTaskId = action.payload;
+    },
+    openDetailSideSheet: (state) => {
+      state.isOpenDetailSideSheet = true;
+    },
+    closeDetailSideSheet: (state) => {
+      state.isOpenDetailSideSheet = false;
+    },
     updateTitle: (state, action) => {
       state.title = action.payload;
     },
@@ -52,5 +65,8 @@ export const {
   updateDeadline,
   updateIsPreviewMarkdown,
   resetTask,
+  openDetailSideSheet,
+  closeDetailSideSheet,
+  handleSelectTask,
 } = taskSlice.actions;
 export default taskSlice.reducer;

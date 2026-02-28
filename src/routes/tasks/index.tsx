@@ -41,6 +41,7 @@ import {
 import { resetTask } from "@/stores/task.slice";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { useAppSelector } from "@/hooks/use-app-selector";
+import KanbanSideSheet from "@/components/kanban/kanban-sidesheet";
 
 export const Route = createFileRoute("/tasks/")({
   component: RouteComponent,
@@ -320,6 +321,10 @@ function RouteComponent() {
           />
         </>
       )}
+      <KanbanSideSheet
+        handleArchiveTask={(id: string) => handleArchiveTask(id)}
+        handleDeleteTask={(id: string) => handleDeleteTask(id)}
+      />
     </AuthenticatedLayout>
   );
 }

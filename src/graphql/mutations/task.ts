@@ -36,7 +36,6 @@ export const ARCHIVED_TASK = gql`
     mutation ChangeArchiveStatus($id: String!) {
         changeArchiveStatus(taskId: $id) {
             id
-            isArchived
         }
     }
 `;

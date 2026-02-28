@@ -27,3 +27,18 @@ export const GET_INITIAL_DATA = gql`
     deadline
   }
 `;
+
+export const GET_TASK_DETAIL = gql`
+  query GetTaskDetail($id: ID!) {
+    getTaskById(taskId: $id) {
+      id
+      title
+      description
+      status
+      priority
+      deadline
+      createdAt
+      updatedAt
+    }
+  }
+`;

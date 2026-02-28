@@ -11,7 +11,9 @@ import {
 } from "@douyinfe/semi-icons";
 import { PRIORITY_CONFIG } from "@/data/task";
 import { formatDeadline } from "@/utils/time";
-import { Dropdown } from "@douyinfe/semi-ui-19";
+import { Button, Dropdown } from "@douyinfe/semi-ui-19";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { handleSelectTask, openDetailSideSheet } from "@/stores/task.slice";
 
 type KanbanCardProps = {
   task: Task;
@@ -36,6 +38,8 @@ export default function KanbanCard({
     transition,
     isDragging,
   } = useSortable({ id: task.id });
+
+  const dispatch = useAppDispatch();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -76,6 +80,7 @@ export default function KanbanCard({
         )}
         <Dropdown
           trigger="click"
+          position="bottomRight"
           render={
             <Dropdown.Menu>
               <Dropdown.Item
@@ -96,15 +101,25 @@ export default function KanbanCard({
             </Dropdown.Menu>
           }
         >
-          <IconMore
-            style={{ color: "var(--semi-color-text-2)" }}
-            className="w-4.5 h-4.5 rounded cursor-pointer hover:bg-[#2a2f3e] transition-colors"
-          />
+          <span style={{ display: "inline-block" }}>
+            <Button
+              icon={<IconMore />}
+              type="tertiary"
+              theme="borderless"
+              style={{ padding: 8, width: 20, height: 20 }}
+            />
+          </span>
         </Dropdown>
       </div>
 
       {/* Title */}
-      <p className="text-sm text-gray-100 leading-snug mb-2 font-bold hover:underline cursor-pointer">
+      <p
+        onClick={() => {
+          dispatch(handleSelectTask(task.id));
+          dispatch(openDetailSideSheet());
+        }}
+        className="text-sm text-gray-100 leading-snug mb-2 font-bold hover:underline cursor-pointer"
+      >
         {task.title}
       </p>
 

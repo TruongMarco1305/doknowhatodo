@@ -52,3 +52,7 @@ export interface ArchivedTaskResponse {
 export interface DeleteTaskResponse {
   deleteTask: Task;
 }
+
+export interface GetTaskDetailResponse {
+  getTaskById: Task;
+}
