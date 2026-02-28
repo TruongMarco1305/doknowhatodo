@@ -7,7 +7,7 @@ import type {
   TaskIdVariable,
   TaskPriority,
 } from "@/types/task";
-import { formatDeadline } from "@/utils/time";
+import { formatTime } from "@/utils/time";
 import { COLUMN_DEFS, PRIORITY_CONFIG } from "@/data/task";
 import { useQuery } from "@apollo/client/react";
 import {
@@ -72,18 +72,8 @@ export default function KanbanSideSheet({ handleArchiveTask, handleDeleteTask }:
   const columnDef = task?.status
     ? COLUMN_DEFS.find((c) => c.id === task.status)
     : null;
-  const deadline = task?.deadline ? formatDeadline(task.deadline) : null;
-
-  const formatDate = (iso?: string) =>
-    iso
-      ? new Date(iso).toLocaleString(undefined, {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      : null;
+  const deadline = task?.deadline ? formatTime(task.deadline) : null;
+  const isOverdue = task?.deadline ? new Date(task.deadline).getTime() < new Date().getTime() : false;
 
   return (
     <SideSheet
@@ -219,17 +209,17 @@ export default function KanbanSideSheet({ handleArchiveTask, handleDeleteTask }:
                 {deadline ? (
                   <span
                     className={`font-medium ${
-                      deadline.isOverdue ? "text-red-400" : "text-amber-400"
+                      isOverdue ? "text-red-400" : "text-amber-400"
                     }`}
                   >
-                    {deadline.isOverdue && (
+                    {isOverdue && (
                       <IconClock
                         size="extra-small"
                         className="inline mr-1 -mt-0.5"
                       />
                     )}
-                    {deadline.text}
-                    {deadline.isOverdue && (
+                    {deadline}
+                    {isOverdue && (
                       <span className="ml-1.5 text-xs text-red-400/70">
                         (overdue)
                       </span>
@@ -242,7 +232,7 @@ export default function KanbanSideSheet({ handleArchiveTask, handleDeleteTask }:
 
               {/* Created at */}
               <InfoRow icon={<IconClock size="small" />} label="Created at">
-                {formatDate(task.createdAt) ?? (
+                {formatTime(task.createdAt) ?? (
                   <span className="text-gray-500 italic">Unknown</span>
                 )}
               </InfoRow>
@@ -252,7 +242,7 @@ export default function KanbanSideSheet({ handleArchiveTask, handleDeleteTask }:
                 icon={<IconClock size="small" />}
                 label="Last updated at"
               >
-                {formatDate(task.updatedAt) ?? (
+                {formatTime(task.updatedAt) ?? (
                   <span className="text-gray-500 italic">Unknown</span>
                 )}
               </InfoRow>

@@ -10,7 +10,7 @@ import {
   IconMore,
 } from "@douyinfe/semi-icons";
 import { PRIORITY_CONFIG } from "@/data/task";
-import { formatDeadline } from "@/utils/time";
+import { formatTime } from "@/utils/time";
 import { Button, Dropdown } from "@douyinfe/semi-ui-19";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { handleSelectTask, openDetailSideSheet } from "@/stores/task.slice";
@@ -49,7 +49,10 @@ export default function KanbanCard({
 
   const priority = task.priority as TaskPriority | undefined;
   const priorityCfg = priority ? PRIORITY_CONFIG[priority] : null;
-  const deadline = task.deadline ? formatDeadline(task.deadline) : null;
+  const deadline = task.deadline ? formatTime(task.deadline) : null;
+  const isOverdue = task.deadline
+    ? new Date(task.deadline).getTime() < new Date().getTime()
+    : false;
 
   return (
     <div
@@ -58,8 +61,8 @@ export default function KanbanCard({
       {...attributes}
       {...listeners}
       className={`bg-[#1a1f2e] border rounded-lg p-3 cursor-grab active:cursor-grabbing select-none transition-colors ${
-        deadline
-          ? deadline?.isOverdue
+        deadline && task.status !== "DONE"
+          ? isOverdue
             ? "border-red-500/50"
             : "border-amber-500/50"
           : "border-[#2a2f3e]"
@@ -127,11 +130,15 @@ export default function KanbanCard({
       {deadline ? (
         <div
           className={`flex items-center gap-1 text-xs font-medium mt-1 ${
-            deadline.isOverdue ? "text-red-400" : "text-amber-400"
+            deadline && task.status !== "DONE"
+              ? isOverdue
+                ? "text-red-400"
+                : "text-amber-400"
+              : "text-gray-400"
           }`}
         >
           <IconClock size="extra-small" />
-          <span>{deadline.text}</span>
+          <span>{deadline}</span>
         </div>
       ) : (
         <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
