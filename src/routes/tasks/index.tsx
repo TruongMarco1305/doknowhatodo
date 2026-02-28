@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/components/layout/authenticated-layout";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import {
   DndContext,
@@ -25,7 +25,7 @@ import type {
 } from "@/types/task";
 import KanbanColumnComponent from "@/components/kanban/kanban-column";
 import KanbanCard from "@/components/kanban/kanban-card";
-import { IconPlus, IconSearch } from "@douyinfe/semi-icons";
+import { IconArchive, IconPlus, IconSearch } from "@douyinfe/semi-icons";
 import { Button, Input, Notification } from "@douyinfe/semi-ui-19";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { GET_INITIAL_DATA } from "@/graphql/queries/task";
@@ -55,6 +55,7 @@ type GetInitialDataResult = {
 };
 
 function RouteComponent() {
+  const navigate = useNavigate();
   const { data, loading } = useQuery<GetInitialDataResult>(GET_INITIAL_DATA);
   const [addTask, { loading: addTaskLoading }] = useMutation<
     CreateTaskResponse,
@@ -246,6 +247,15 @@ function RouteComponent() {
                 value={search}
                 onChange={(e) => setSearch(e)}
               />
+              <Button
+                onClick={() => {
+                  navigate({ to: "/tasks/archived" });
+                }}
+                icon={<IconArchive />}
+                type="tertiary"
+              >
+                Archived tasks
+              </Button>
               <Button onClick={() => setIsModalOpen(true)} icon={<IconPlus />}>
                 Add task
               </Button>

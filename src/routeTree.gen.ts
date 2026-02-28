@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TasksIndexRouteImport } from './routes/tasks/index'
+import { Route as TasksArchivedIndexRouteImport } from './routes/tasks/archived/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 
@@ -28,6 +29,11 @@ const IndexRoute = IndexRouteImport.update({
 const TasksIndexRoute = TasksIndexRouteImport.update({
   id: '/tasks/',
   path: '/tasks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TasksArchivedIndexRoute = TasksArchivedIndexRouteImport.update({
+  id: '/tasks/archived/',
+  path: '/tasks/archived/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/tasks/': typeof TasksIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/signup/': typeof AuthSignupIndexRoute
+  '/tasks/archived/': typeof TasksArchivedIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof TasksIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/signup': typeof AuthSignupIndexRoute
+  '/tasks/archived': typeof TasksArchivedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,19 +70,40 @@ export interface FileRoutesById {
   '/tasks/': typeof TasksIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/signup/': typeof AuthSignupIndexRoute
+  '/tasks/archived/': typeof TasksArchivedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/tasks/' | '/auth/login/' | '/auth/signup/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/tasks/'
+    | '/auth/login/'
+    | '/auth/signup/'
+    | '/tasks/archived/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/tasks' | '/auth/login' | '/auth/signup'
-  id: '__root__' | '/' | '/auth' | '/tasks/' | '/auth/login/' | '/auth/signup/'
+  to:
+    | '/'
+    | '/auth'
+    | '/tasks'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/tasks/archived'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/tasks/'
+    | '/auth/login/'
+    | '/auth/signup/'
+    | '/tasks/archived/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   TasksIndexRoute: typeof TasksIndexRoute
+  TasksArchivedIndexRoute: typeof TasksArchivedIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -98,6 +127,13 @@ declare module '@tanstack/react-router' {
       path: '/tasks'
       fullPath: '/tasks/'
       preLoaderRoute: typeof TasksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks/archived/': {
+      id: '/tasks/archived/'
+      path: '/tasks/archived'
+      fullPath: '/tasks/archived/'
+      preLoaderRoute: typeof TasksArchivedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/signup/': {
@@ -135,6 +171,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   TasksIndexRoute: TasksIndexRoute,
+  TasksArchivedIndexRoute: TasksArchivedIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

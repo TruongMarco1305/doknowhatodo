@@ -17,12 +17,7 @@ import {
 import type { ReactNode } from "react";
 import GlobalLoading from "../global-loading";
 import Logo from "../icon/logo";
-import {
-  IconArchive,
-  IconHelpCircle,
-  IconUser,
-  IconQuit,
-} from "@douyinfe/semi-icons";
+import { IconHelpCircle, IconUser, IconQuit } from "@douyinfe/semi-icons";
 import AuthService from "@/service/auth.service";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { closeUserGuide, openUserGuide } from "@/stores/user.slice";
@@ -61,18 +56,19 @@ export default function AuthenticatedLayout({
         <div>
           <Nav
             mode="horizontal"
-            header={{
-              logo: <Logo />,
-              text: "DoKnowWhatodo",
-            }}
-            items={[
-              {
-                itemKey: "archived",
-                text: "Archived Tasks",
-                link: "/tasks/archived",
-                icon: <IconArchive />,
-              },
-            ]}
+            header={
+              <div
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  navigate({ to: "/tasks" });
+                }}
+              >
+                <Logo />
+                <span className="text-lg font-bold text-white">
+                  Doknowhatodo
+                </span>
+              </div>
+            }
             footer={
               <>
                 <Button
@@ -104,7 +100,7 @@ export default function AuthenticatedLayout({
                     </Dropdown.Menu>
                   }
                 >
-                  <div className='cursor-pointer'>
+                  <div className="cursor-pointer">
                     {data?.getMe.imageUrl ? (
                       <Avatar
                         alt="User Avatar"
