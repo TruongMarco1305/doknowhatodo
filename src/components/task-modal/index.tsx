@@ -17,6 +17,7 @@ import {
   updateTitle,
 } from "@/stores/task.slice";
 import { useAppSelector } from "@/hooks/use-app-selector";
+import { formatTime } from "@/utils/time";
 
 type TaskModalProps = {
   isOpen: boolean;
@@ -110,8 +111,7 @@ export default function TaskModal({ isOpen, close, submit, loading }: TaskModalP
           type="dateTime"
           needConfirm={true}
           onConfirm={(date) => {
-            const iso = (date as Date).toISOString();
-            dispatch(updateDeadline(iso.slice(0, 19)));
+            dispatch(updateDeadline((date as Date).toISOString().slice(0, 19)));
           }}
           value={deadline ? new Date(deadline) : undefined}
           disabled={loading}
@@ -126,7 +126,7 @@ export default function TaskModal({ isOpen, close, submit, loading }: TaskModalP
           </Button>
         )}
       </div>
-      {deadline && <h1 className="italic mt-2">Deadline: {deadline}</h1>}
+      {deadline && <h1 className="italic mt-2">Deadline: {formatTime(deadline)}</h1>}
     </Modal>
   );
 }
